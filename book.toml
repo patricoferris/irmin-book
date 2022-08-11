@@ -1,0 +1,7 @@
+[book]
+authors = ["Patrick Ferris"]
+language = "en"
+multilingual = false
+src = "src"
+title = "Real World Irmin"
+theme = "theme"
