@@ -92,7 +92,7 @@ In fact for the most part the encoding does use JSON to format the OCaml values.
 
 ```ocaml
 # Irmin.Type.to_string Message.t "\xc3\x28";;
-- : string = "ï¿½("
+- : string = "Ã("
 ```
 
 Whereas we must convert to a UTF-8 string that we can serialise and deserialise.
