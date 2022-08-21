@@ -91,8 +91,7 @@ But there is an actual JSON-backend to the representation.
 In fact for the most part the encoding does use JSON to format the OCaml values. The difference are usually very subtle, for example OCaml strings are just bytes whereas for JSON they must be UTF-8. So we can get very different formats (or as above where the JSON string requires the inverted-commas).
 
 ```ocaml
-# Irmin.Type.to_string Message.t "\xc3\x28";;
-- : string = "Ã("
+let _no_output_because_utf8 = Irmin.Type.to_string Message.t "\xc3\x28"
 ```
 
 Whereas we must convert to a UTF-8 string that we can serialise and deserialise.
