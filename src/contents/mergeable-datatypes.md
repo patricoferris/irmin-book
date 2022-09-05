@@ -131,6 +131,3 @@ LCA: 10, Diff1: -2, Diff2: 5
 
 The merge function was only needed once. When `alice_action` is applied, it is a simple "fast-forward" merge because there is no three-way merge required. However, when `bob_action` is applied there is now the LCA (the initial `10` value), Bob's new value (`8`) and Alice's value that has been merged (`15`).
 
-## Standard Mergeable Containers
-
-It is quite common to use a basic set of mergeable datatypes to construct new custom MDTs by first converting your type to that datatype and performing the merge.
