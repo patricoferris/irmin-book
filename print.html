@@ -83,7 +83,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li class="chapter-item expanded "><a href="store_contents.html"><strong aria-hidden="true">2.</strong> Contents of the Store</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="contents/mergeable-datatypes.html"><strong aria-hidden="true">2.1.</strong> Mergeable Datatypes</a></li><li class="chapter-item expanded "><a href="contents/json-at-rest.html"><strong aria-hidden="true">2.2.</strong> JSON at Rest</a></li></ol></li></ol>            </div>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="intro/what-is-irmin.html"><strong aria-hidden="true">1.1.</strong> What is Irmin?</a></li><li class="chapter-item expanded "><a href="intro/key-concepts.html"><strong aria-hidden="true">1.2.</strong> Key Concepts</a></li></ol></li><li class="chapter-item expanded "><a href="architecture.html"><strong aria-hidden="true">2.</strong> Architecture</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="arch/functors.html"><strong aria-hidden="true">2.1.</strong> A primer on functors</a></li><li class="chapter-item expanded "><a href="arch/branches-keys-and-contents.html"><strong aria-hidden="true">2.2.</strong> Branches, Keys and Contents</a></li><li class="chapter-item expanded "><a href="arch/portability.html"><strong aria-hidden="true">2.3.</strong> MirageOS-style Portability</a></li><li class="chapter-item expanded "><a href="arch/backend.html"><strong aria-hidden="true">2.4.</strong> Backend Storage</a></li></ol></li><li class="chapter-item expanded "><a href="store_contents.html"><strong aria-hidden="true">3.</strong> Contents of the Store</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="contents/mergeable-datatypes.html"><strong aria-hidden="true">3.1.</strong> Mergeable Datatypes</a></li><li class="chapter-item expanded "><a href="contents/json-at-rest.html"><strong aria-hidden="true">3.2.</strong> JSON at Rest</a></li></ol></li><li class="chapter-item expanded "><a href="sync.html"><strong aria-hidden="true">4.</strong> Synchronisation</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="sync/pull.html"><strong aria-hidden="true">4.1.</strong> Pulling remote data</a></li><li class="chapter-item expanded "><a href="sync/push.html"><strong aria-hidden="true">4.2.</strong> Pushing Data</a></li></ol></li><li class="chapter-item expanded "><a href="intf.html"><strong aria-hidden="true">5.</strong> Public Interfaces for Irmin Stores</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="intf/cli.html"><strong aria-hidden="true">5.1.</strong> Command-line Interface</a></li><li class="chapter-item expanded "><a href="intf/graphql.html"><strong aria-hidden="true">5.2.</strong> GraphQL Interface</a></li><li class="chapter-item expanded "><a href="intf/irmin-server.html"><strong aria-hidden="true">5.3.</strong> Irmin-server Interface</a></li></ol></li><li class="chapter-item expanded "><a href="todo/intro.html"><strong aria-hidden="true">6.</strong> Mergeable TODO application</a></li></ol>            </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
 
@@ -159,6 +159,63 @@
 notification mechanism</li>
 </ul>
 </blockquote>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="what-is-irmin"><a class="header" href="#what-is-irmin">What is Irmin?</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="key-concepts"><a class="header" href="#key-concepts">Key Concepts</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="architecture"><a class="header" href="#architecture">Architecture</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="a-primer-on-functors"><a class="header" href="#a-primer-on-functors">A Primer on Functors</a></h1>
+<p>Programming applications in Irmin requires a familiarity with OCaml's functors. Here are a few resources for learning more about them:</p>
+<ul>
+<li><a href="https://v2.ocaml.org/releases/4.14/htmlman/moduleexamples.html#s%3Afunctors">The OCaml manual</a>: The definitive guide to different aspects of the OCaml language.</li>
+</ul>
+<p>What follows is an Irmin-specific introduction to functors.</p>
+<h2 id="generalisation"><a class="header" href="#generalisation">Generalisation</a></h2>
+<p>Functors, in a non-theoretical sense, can be thought of as functions over modules. A functor takes a module and produces another module. For example, we might produce a new module that hashes values provided they can be serialised to a string.</p>
+<pre><code class="language-ocaml">(* A module signature for modules who have a main type called [t]
+   and that provide a function [serialise] to convert [t] to a [string]. *)
+module type Serialisable = sig
+    type t
+    val serialise : t -&gt; string
+end
+</code></pre>
+<p>We will also need another module signature describing what a digestable type looks like.</p>
+<pre><code class="language-ocaml">module type Digestable = sig
+    type t
+    (** The values to digest *)
+
+    type hash
+    (** The type of digests produced *)
+
+    val hash_to_string : hash -&gt; string
+    (** Convert digests to a string *)
+
+    val digest : t -&gt; hash
+end
+</code></pre>
+<p>We could then provide a SHA256 hashing functor for serialisable types.</p>
+<pre><code class="language-ocaml">module SHA256 (S : Serialisable) : Digestable with type t = S.t and type hash = Digestif.SHA256.t = struct
+    type t = S.t
+    type hash = Digestif.SHA256.t
+    let hash_to_string = Digestif.SHA256.to_raw_string
+    let digest v = Digestif.SHA256.digest_string (S.serialise v)
+end
+</code></pre>
+<p>We can then use our functor.</p>
+<pre><code class="language-ocaml">module Integer = struct
+  type t = int
+  let serialise = string_of_int
+end
+
+module Digest_int = SHA256(Integer)
+</code></pre>
+<p>And then use it.</p>
+<pre><code class="language-ocaml"># let d = Digest_int.digest 42;;
+val d : Digest_int.hash = &lt;abstr&gt;
+# Digest_int.hash_to_string d |&gt; Base64.encode_exn;;
+- : string = &quot;c0dctApWjo2ooEXO0RATfhWfiQrE2og7axfcZRs6gEk=&quot;
+</code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="branches-keys-and-contents"><a class="header" href="#branches-keys-and-contents">Branches, Keys and Contents</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="mirageos-style-portability"><a class="header" href="#mirageos-style-portability">MirageOS-style Portability</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="backend-storage"><a class="header" href="#backend-storage">Backend Storage</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="contents-of-the-store"><a class="header" href="#contents-of-the-store">Contents of the Store</a></h1>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="mergeable-datatypes"><a class="header" href="#mergeable-datatypes">Mergeable Datatypes</a></h1>
 <p>One of Irmin's major selling points is having <em>mergeable datatypes</em> (MDT). These are values that have a three-way merge function. If you are familiar with the <code>git</code> version control system then the idea should be familiar. </p>
@@ -268,8 +325,6 @@ LCA: 10, Diff1: -2, Diff2: 5
 - : int = 13
 </code></pre>
 <p>The merge function was only needed once. When <code>alice_action</code> is applied, it is a simple &quot;fast-forward&quot; merge because there is no three-way merge required. However, when <code>bob_action</code> is applied there is now the LCA (the initial <code>10</code> value), Bob's new value (<code>8</code>) and Alice's value that has been merged (<code>15</code>).</p>
-<h2 id="standard-mergeable-containers"><a class="header" href="#standard-mergeable-containers">Standard Mergeable Containers</a></h2>
-<p>It is quite common to use a basic set of mergeable datatypes to construct new custom MDTs by first converting your type to that datatype and performing the merge.</p>
 <div style="break-before: page; page-break-before: always;"></div><h1 id="json-at-rest"><a class="header" href="#json-at-rest">JSON at Rest</a></h1>
 <p>As has been mentioned many times, Irmin is fundamentally a key-value store. Thanks to its portability and flexibility both in storage backend and data format, Irmin is not the only means by which to interact with the data.</p>
 <h3 id="storing-json-values"><a class="header" href="#storing-json-values">Storing JSON values</a></h3>
@@ -361,6 +416,14 @@ end
   let merge = Irmin.Merge.(option (v t merge))
 end
 </code></pre>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="synchronisation"><a class="header" href="#synchronisation">Synchronisation</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="pulling-remote-data"><a class="header" href="#pulling-remote-data">Pulling remote data</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="pushing-data"><a class="header" href="#pushing-data">Pushing Data</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="public-interfaces-for-irmin-stores"><a class="header" href="#public-interfaces-for-irmin-stores">Public Interfaces for Irmin Stores</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="command-line-interface"><a class="header" href="#command-line-interface">Command-line Interface</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="graphql-interface"><a class="header" href="#graphql-interface">GraphQL Interface</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="irmin-server-interface"><a class="header" href="#irmin-server-interface">Irmin-server Interface</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h1 id="mergeable-todo-application"><a class="header" href="#mergeable-todo-application">Mergeable TODO application</a></h1>
 
                     </main>
 
