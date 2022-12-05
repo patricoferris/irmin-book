@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Mergeable TODO application - Real World Irmin</title>
+        <title>Schemas - Real World Irmin</title>
                 
 
         <!-- Custom HTML head -->
@@ -82,7 +82,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="../introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../intro/what-is-irmin.html"><strong aria-hidden="true">1.1.</strong> What is Irmin?</a></li><li class="chapter-item expanded "><a href="../intro/key-concepts.html"><strong aria-hidden="true">1.2.</strong> Key Concepts</a></li></ol></li><li class="chapter-item expanded "><a href="../architecture.html"><strong aria-hidden="true">2.</strong> Architecture</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../arch/functors.html"><strong aria-hidden="true">2.1.</strong> A primer on functors</a></li><li class="chapter-item expanded "><a href="../arch/schemas.html"><strong aria-hidden="true">2.2.</strong> Schemas</a></li><li class="chapter-item expanded "><a href="../arch/runtime-types.html"><strong aria-hidden="true">2.3.</strong> Runtime Types</a></li><li class="chapter-item expanded "><a href="../arch/backend.html"><strong aria-hidden="true">2.4.</strong> Backend Storage</a></li><li class="chapter-item expanded "><a href="../arch/portability.html"><strong aria-hidden="true">2.5.</strong> MirageOS-style Portability</a></li></ol></li><li class="chapter-item expanded "><a href="../store_contents.html"><strong aria-hidden="true">3.</strong> Contents of the Store</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../contents/mergeable-datatypes.html"><strong aria-hidden="true">3.1.</strong> Mergeable Datatypes</a></li><li class="chapter-item expanded "><a href="../contents/json-at-rest.html"><strong aria-hidden="true">3.2.</strong> JSON at Rest</a></li></ol></li><li class="chapter-item expanded "><a href="../sync.html"><strong aria-hidden="true">4.</strong> Synchronisation</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../sync/pull.html"><strong aria-hidden="true">4.1.</strong> Pulling remote data</a></li><li class="chapter-item expanded "><a href="../sync/push.html"><strong aria-hidden="true">4.2.</strong> Pushing Data</a></li></ol></li><li class="chapter-item expanded "><a href="../intf.html"><strong aria-hidden="true">5.</strong> Public Interfaces for Irmin Stores</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../intf/cli.html"><strong aria-hidden="true">5.1.</strong> Command-line Interface</a></li><li class="chapter-item expanded "><a href="../intf/graphql.html"><strong aria-hidden="true">5.2.</strong> GraphQL Interface</a></li><li class="chapter-item expanded "><a href="../intf/irmin-server.html"><strong aria-hidden="true">5.3.</strong> Irmin-server Interface</a></li></ol></li><li class="chapter-item expanded "><a href="../todo/intro.html" class="active"><strong aria-hidden="true">6.</strong> Mergeable TODO application</a></li></ol>            </div>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="../introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../intro/what-is-irmin.html"><strong aria-hidden="true">1.1.</strong> What is Irmin?</a></li><li class="chapter-item expanded "><a href="../intro/key-concepts.html"><strong aria-hidden="true">1.2.</strong> Key Concepts</a></li></ol></li><li class="chapter-item expanded "><a href="../architecture.html"><strong aria-hidden="true">2.</strong> Architecture</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../arch/functors.html"><strong aria-hidden="true">2.1.</strong> A primer on functors</a></li><li class="chapter-item expanded "><a href="../arch/schemas.html" class="active"><strong aria-hidden="true">2.2.</strong> Schemas</a></li><li class="chapter-item expanded "><a href="../arch/runtime-types.html"><strong aria-hidden="true">2.3.</strong> Runtime Types</a></li><li class="chapter-item expanded "><a href="../arch/backend.html"><strong aria-hidden="true">2.4.</strong> Backend Storage</a></li><li class="chapter-item expanded "><a href="../arch/portability.html"><strong aria-hidden="true">2.5.</strong> MirageOS-style Portability</a></li></ol></li><li class="chapter-item expanded "><a href="../store_contents.html"><strong aria-hidden="true">3.</strong> Contents of the Store</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../contents/mergeable-datatypes.html"><strong aria-hidden="true">3.1.</strong> Mergeable Datatypes</a></li><li class="chapter-item expanded "><a href="../contents/json-at-rest.html"><strong aria-hidden="true">3.2.</strong> JSON at Rest</a></li></ol></li><li class="chapter-item expanded "><a href="../sync.html"><strong aria-hidden="true">4.</strong> Synchronisation</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../sync/pull.html"><strong aria-hidden="true">4.1.</strong> Pulling remote data</a></li><li class="chapter-item expanded "><a href="../sync/push.html"><strong aria-hidden="true">4.2.</strong> Pushing Data</a></li></ol></li><li class="chapter-item expanded "><a href="../intf.html"><strong aria-hidden="true">5.</strong> Public Interfaces for Irmin Stores</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../intf/cli.html"><strong aria-hidden="true">5.1.</strong> Command-line Interface</a></li><li class="chapter-item expanded "><a href="../intf/graphql.html"><strong aria-hidden="true">5.2.</strong> GraphQL Interface</a></li><li class="chapter-item expanded "><a href="../intf/irmin-server.html"><strong aria-hidden="true">5.3.</strong> Irmin-server Interface</a></li></ol></li><li class="chapter-item expanded "><a href="../todo/intro.html"><strong aria-hidden="true">6.</strong> Mergeable TODO application</a></li></ol>            </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
 
@@ -143,16 +143,84 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="mergeable-todo-application"><a class="header" href="#mergeable-todo-application">Mergeable TODO application</a></h1>
+                        <h1 id="schemas"><a class="header" href="#schemas">Schemas</a></h1>
+<p>Every Irmin store has a schema. This specifies the concrete implementations of the various kinds of customisable aspects of the store. For example what type are the keys, the branches and the contents.</p>
+<p>In Irmin everything gets specified upfront using functor application. Whereas with something like <code>Hashtbl</code> its type will be inferred but its use.</p>
+<p>Most stores take a <code>Schema</code> module to provide the concrete implementation of the various customisable parts of the Irmin store. This can be a little verbose, but most of the time the defaults are just fine.</p>
+<pre><code class="language-ocaml">module Schema : Irmin.Schema.S = struct
+  open Irmin
+  module Hash = Hash.BLAKE2B
+  module Info = Info.Default
+  module Branch = Branch.String
+  module Path = Path.String_list
+  module Metadata = Metadata.None
+  module Contents = struct
+    type t = int[@@deriving irmin]
+    let merge = Irmin.Merge.(option @@ default t) 
+  end
+end
+module S = Irmin_mem.Make (Schema)
+(* A fake clock and info function for our commits *)
+let clock = let time = ref 0L in fun () -&gt; time := Int64.add !time 1L; !time
+let info () = S.Info.v (clock ())
+</code></pre>
+<p>Here we've defined a schema to use Blake2B hash functions, default commit information, branches are strings, keys (or paths) are string lists, no extra metadata and finally the content of the store is integers.</p>
+<p>However, we'll quickly run into problems as soon as we try to use the store.</p>
+<pre><code class="language-ocaml"># let config = Irmin_mem.config () in
+  let* repo = S.Repo.v config in
+  let* main = S.main repo in
+  let* () = S.set_exn ~info main [ &quot;hello&quot; ] 1 in
+  S.get main [ &quot;hello&quot; ];;
+Line 4, characters 34-45:
+Error: This expression has type 'a list
+       but an expression was expected of type S.path
+</code></pre>
+<p>This is because in our definition of the schema we <em>hid</em> the implementation details by adding <code>: Irmin.Schema.S</code>. So either we canleave that part out or we must provide a module type to expose the information (or at the very least the bits we need).</p>
+<pre><code class="language-ocaml">module type String_list_int_schema = Irmin.Schema.S 
+   with type Hash.t = Irmin.Schema.default_hash
+    and type Branch.t = string
+    and type Info.t = Irmin.Info.default
+    and type Metadata.t = unit
+    and type Path.step = string
+    and type Path.t = string list
+    and type Contents.t = int
+</code></pre>
+<p>And then use that to define the store.</p>
+<pre><code class="language-ocaml">module Schema2 : String_list_int_schema = struct
+  open Irmin
+  module Hash = Hash.BLAKE2B
+  module Info = Info.Default
+  module Branch = Branch.String
+  module Path = Path.String_list
+  module Metadata = Metadata.None
+  module Contents = struct
+    type t = int[@@deriving irmin]
+    let merge = Irmin.Merge.(option @@ default t) 
+  end
+end
+module S = Irmin_mem.Make (Schema2)
+let info () = S.Info.v (clock ())
+</code></pre>
+<p>And now the compiler knows what the types are (they haven't been abstracted away).</p>
+<pre><code class="language-ocaml"># let config = Irmin_mem.config () in
+  let* repo = S.Repo.v config in
+  let* main = S.main repo in
+  let* () = S.set_exn ~info main [ &quot;hello&quot; ] 1 in
+  S.get main [ &quot;hello&quot; ];;
+- : int = 1
+</code></pre>
 
                     </main>
 
                     <nav class="nav-wrapper" aria-label="Page navigation">
                         <!-- Mobile navigation buttons -->
-                                                    <a rel="prev" href="../intf/irmin-server.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                                    <a rel="prev" href="../arch/functors.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                                 <i class="fa fa-angle-left"></i>
                             </a>
                         
+                                                    <a rel="next" href="../arch/runtime-types.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
                         
                         <div style="clear: both"></div>
                     </nav>
@@ -160,10 +228,13 @@
             </div>
 
             <nav class="nav-wide-wrapper" aria-label="Page navigation">
-                                    <a rel="prev" href="../intf/irmin-server.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                    <a rel="prev" href="../arch/functors.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
                         <i class="fa fa-angle-left"></i>
                     </a>
                 
+                                    <a rel="next" href="../arch/runtime-types.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
                             </nav>
 
         </div>

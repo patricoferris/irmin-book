@@ -82,7 +82,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="../introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../intro/what-is-irmin.html"><strong aria-hidden="true">1.1.</strong> What is Irmin?</a></li><li class="chapter-item expanded "><a href="../intro/key-concepts.html"><strong aria-hidden="true">1.2.</strong> Key Concepts</a></li></ol></li><li class="chapter-item expanded "><a href="../architecture.html"><strong aria-hidden="true">2.</strong> Architecture</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../arch/functors.html"><strong aria-hidden="true">2.1.</strong> A primer on functors</a></li><li class="chapter-item expanded "><a href="../arch/branches-keys-and-contents.html"><strong aria-hidden="true">2.2.</strong> Branches, Keys and Contents</a></li><li class="chapter-item expanded "><a href="../arch/portability.html"><strong aria-hidden="true">2.3.</strong> MirageOS-style Portability</a></li><li class="chapter-item expanded "><a href="../arch/backend.html"><strong aria-hidden="true">2.4.</strong> Backend Storage</a></li></ol></li><li class="chapter-item expanded "><a href="../store_contents.html"><strong aria-hidden="true">3.</strong> Contents of the Store</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../contents/mergeable-datatypes.html"><strong aria-hidden="true">3.1.</strong> Mergeable Datatypes</a></li><li class="chapter-item expanded "><a href="../contents/json-at-rest.html" class="active"><strong aria-hidden="true">3.2.</strong> JSON at Rest</a></li></ol></li><li class="chapter-item expanded "><a href="../sync.html"><strong aria-hidden="true">4.</strong> Synchronisation</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../sync/pull.html"><strong aria-hidden="true">4.1.</strong> Pulling remote data</a></li><li class="chapter-item expanded "><a href="../sync/push.html"><strong aria-hidden="true">4.2.</strong> Pushing Data</a></li></ol></li><li class="chapter-item expanded "><a href="../intf.html"><strong aria-hidden="true">5.</strong> Public Interfaces for Irmin Stores</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../intf/cli.html"><strong aria-hidden="true">5.1.</strong> Command-line Interface</a></li><li class="chapter-item expanded "><a href="../intf/graphql.html"><strong aria-hidden="true">5.2.</strong> GraphQL Interface</a></li><li class="chapter-item expanded "><a href="../intf/irmin-server.html"><strong aria-hidden="true">5.3.</strong> Irmin-server Interface</a></li></ol></li><li class="chapter-item expanded "><a href="../todo/intro.html"><strong aria-hidden="true">6.</strong> Mergeable TODO application</a></li></ol>            </div>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="../introduction.html"><strong aria-hidden="true">1.</strong> Introduction</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../intro/what-is-irmin.html"><strong aria-hidden="true">1.1.</strong> What is Irmin?</a></li><li class="chapter-item expanded "><a href="../intro/key-concepts.html"><strong aria-hidden="true">1.2.</strong> Key Concepts</a></li></ol></li><li class="chapter-item expanded "><a href="../architecture.html"><strong aria-hidden="true">2.</strong> Architecture</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../arch/functors.html"><strong aria-hidden="true">2.1.</strong> A primer on functors</a></li><li class="chapter-item expanded "><a href="../arch/schemas.html"><strong aria-hidden="true">2.2.</strong> Schemas</a></li><li class="chapter-item expanded "><a href="../arch/runtime-types.html"><strong aria-hidden="true">2.3.</strong> Runtime Types</a></li><li class="chapter-item expanded "><a href="../arch/backend.html"><strong aria-hidden="true">2.4.</strong> Backend Storage</a></li><li class="chapter-item expanded "><a href="../arch/portability.html"><strong aria-hidden="true">2.5.</strong> MirageOS-style Portability</a></li></ol></li><li class="chapter-item expanded "><a href="../store_contents.html"><strong aria-hidden="true">3.</strong> Contents of the Store</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../contents/mergeable-datatypes.html"><strong aria-hidden="true">3.1.</strong> Mergeable Datatypes</a></li><li class="chapter-item expanded "><a href="../contents/json-at-rest.html" class="active"><strong aria-hidden="true">3.2.</strong> JSON at Rest</a></li></ol></li><li class="chapter-item expanded "><a href="../sync.html"><strong aria-hidden="true">4.</strong> Synchronisation</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../sync/pull.html"><strong aria-hidden="true">4.1.</strong> Pulling remote data</a></li><li class="chapter-item expanded "><a href="../sync/push.html"><strong aria-hidden="true">4.2.</strong> Pushing Data</a></li></ol></li><li class="chapter-item expanded "><a href="../intf.html"><strong aria-hidden="true">5.</strong> Public Interfaces for Irmin Stores</a></li><li><ol class="section"><li class="chapter-item expanded "><a href="../intf/cli.html"><strong aria-hidden="true">5.1.</strong> Command-line Interface</a></li><li class="chapter-item expanded "><a href="../intf/graphql.html"><strong aria-hidden="true">5.2.</strong> GraphQL Interface</a></li><li class="chapter-item expanded "><a href="../intf/irmin-server.html"><strong aria-hidden="true">5.3.</strong> Irmin-server Interface</a></li></ol></li><li class="chapter-item expanded "><a href="../todo/intro.html"><strong aria-hidden="true">6.</strong> Mergeable TODO application</a></li></ol>            </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
         </nav>
 
@@ -234,6 +234,40 @@ end
   let merge = Irmin.Merge.(option (v t merge))
 end
 </code></pre>
+<h3 id="care-with-serialisation-of-your-types"><a class="header" href="#care-with-serialisation-of-your-types">Care with Serialisation of your Types</a></h3>
+<p>One thing to watch out for with serialisation of types is that it won't be applied
+recursively to all of your types. Consider the following defintion where we make 
+an indirection via a type alise and forget we haven't converted the <code>name_t</code> to use
+JSON.</p>
+<pre><code class="language-ocaml">module Message_json = struct
+  type name = string [@@deriving irmin]
+  type t = name list [@@deriving irmin]
+
+  let merge ~old:_ a b =
+    match List.compare String.compare a b with
+    | 0 -&gt;
+        if Irmin.Type.(unstage (equal t)) a b then
+            Irmin.Merge.ok a
+        else
+            let msg = &quot;Conflicting entries have the same timestamp but different values&quot; in
+            Irmin.Merge.conflict &quot;%s&quot; msg
+    | 1 -&gt; Irmin.Merge.ok a
+    | _ -&gt; Irmin.Merge.ok b
+
+  let t = Irmin.(Type.like ~pp:(Type.pp_json t) ~of_string:(Type.of_json_string t) t)
+    
+  let merge = Irmin.Merge.(option (v t merge))
+end
+</code></pre>
+<p>Now if we accidently used <code>Message_json.name_t</code> directly it won't be like <code>Message_json.t</code>.</p>
+<pre><code class="language-ocaml"># let msg = [ &quot;\xc3\x28&quot; ] in
+  let v = Fmt.str &quot;%s&quot; Irmin.Type.(to_string Message_json.t msg) in
+  let v' = Fmt.str &quot;[%a]&quot; Fmt.(list string) (List.map Irmin.Type.(to_string Message_json.name_t) msg) in
+  v = v';;
+- : bool = false
+</code></pre>
+<p>This example is pretty contrived, but it is meant to just show the problem rather than an exact
+real-world example.</p>
 
                     </main>
 
