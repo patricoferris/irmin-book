@@ -124,4 +124,44 @@ module Message_json : Message = struct
 end
 ```
 
+### Care with Serialisation of your Types 
 
+One thing to watch out for with serialisation of types is that it won't be applied
+recursively to all of your types. Consider the following defintion where we make 
+an indirection via a type alise and forget we haven't converted the `name_t` to use
+JSON.
+
+```ocaml
+module Message_json = struct
+  type name = string [@@deriving irmin]
+  type t = name list [@@deriving irmin]
+
+  let merge ~old:_ a b =
+    match List.compare String.compare a b with
+    | 0 ->
+        if Irmin.Type.(unstage (equal t)) a b then
+            Irmin.Merge.ok a
+        else
+            let msg = "Conflicting entries have the same timestamp but different values" in
+            Irmin.Merge.conflict "%s" msg
+    | 1 -> Irmin.Merge.ok a
+    | _ -> Irmin.Merge.ok b
+
+  let t = Irmin.(Type.like ~pp:(Type.pp_json t) ~of_string:(Type.of_json_string t) t)
+    
+  let merge = Irmin.Merge.(option (v t merge))
+end
+```
+
+Now if we accidently used `Message_json.name_t` directly it won't be like `Message_json.t`.
+
+```ocaml
+# let msg = [ "\xc3\x28" ] in
+  let v = Fmt.str "%s" Irmin.Type.(to_string Message_json.t msg) in
+  let v' = Fmt.str "[%a]" Fmt.(list string) (List.map Irmin.Type.(to_string Message_json.name_t) msg) in
+  v = v';;
+- : bool = false
+```
+
+This example is pretty contrived, but it is meant to just show the problem rather than an exact
+real-world example.

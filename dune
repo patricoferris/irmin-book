@@ -1,1 +1,6 @@
 (vendored_dirs irmin)
+
+(executable
+ (name main)
+ (preprocess (pps ppx_irmin))
+ (libraries irmin cbor irmin.mem))
