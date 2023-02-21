@@ -1,8 +1,8 @@
 # Mergeable Datatypes
 
-One of Irmin's major selling points is having _mergeable datatypes_ (MDT). These are values that have a three-way merge function. If you are familiar with the `git` version control system then the idea should be familiar. 
+Contents in [Irmin][] are _mergeable datatypes_ (MDT). These are values that have a three-way merge function. If you are familiar with the `git` version control system then the idea will hopefully be familiar.
 
-Whenever you want to store some new value `x` in an Irmin store `S` at key `k`, there are two other _versions_ of `x` to consider. 
+Whenever you want to store some new value `x` in an Irmin store `S` at key `k`, there are two other _versions_ of `x` to consider.
 
  1. The current version of `x` in store `S` at key `k` let's call it `x'`.
  2. The shared **lowest-common ancestor** (LCA) of `x` and `x'` in store `S` at key `k` let's call it `lca`.
@@ -78,10 +78,10 @@ Note that the merge function here contains a print statement that you might actu
 From here we can recreate the scenario between Alice and Bob. We'll use different branches to represent multiple stores.
 
 ```ocaml
-let alice_action s = 
+let alice_action s =
   let* v = Store.get s [ "counter" ] in
-  let c = 
-    Counter.incr v 
+  let c =
+    Counter.incr v
     |> Counter.incr
     |> Counter.incr
     |> Counter.incr
@@ -89,10 +89,10 @@ let alice_action s =
   in
   Store.set_exn ~info s [ "counter" ] c
 
-let bob_action s = 
+let bob_action s =
   let* v = Store.get s [ "counter" ] in
-  let c = 
-    Counter.decr v 
+  let c =
+    Counter.decr v
     |> Counter.decr
   in
   Store.set_exn ~info s [ "counter" ] c
@@ -116,11 +116,11 @@ Now for the main function which initialises the main store and applies both Alic
   let* () = bob_action bob_branch in
 
   (* Merge the results *)
-  let* () = 
+  let* () =
     let+ merge = Store.merge_into ~into:main ~info alice_branch in
     Result.get_ok merge
   in
-  let* () = 
+  let* () =
     let+ merge = Store.merge_into ~into:main ~info bob_branch  in
     Result.get_ok merge
   in
@@ -131,3 +131,4 @@ LCA: 10, Diff1: -2, Diff2: 5
 
 The merge function was only needed once. When `alice_action` is applied, it is a simple "fast-forward" merge because there is no three-way merge required. However, when `bob_action` is applied there is now the LCA (the initial `10` value), Bob's new value (`8`) and Alice's value that has been merged (`15`).
 
+{{#include ../links.md}}

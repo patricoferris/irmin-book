@@ -1,3 +1,4 @@
 (mdx
   (files *.md)
+  (deps ./views/main.exe)
   (preludes ./prelude.ml))

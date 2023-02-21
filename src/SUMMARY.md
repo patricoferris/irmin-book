@@ -1,6 +1,7 @@
 # Summary
+[Introduction](./introduction.md)
 
-- [Introduction](./introduction.md)
+- [Concepts](./concepts.md)
   - [What is Irmin?](./intro/what-is-irmin.md)
   - [Key Concepts](./intro/key-concepts.md)
 - [Architecture](./architecture.md)
@@ -12,6 +13,7 @@
 - [Contents of the Store](./store_contents.md)
   - [Mergeable Datatypes](./contents/mergeable-datatypes.md)
   - [JSON at Rest](./contents/json-at-rest.md)
+  - [Versioned Data](./contents/versioned-data.md)
 - [Synchronisation](./sync.md)
   - [Pulling remote data](./sync/pull.md)
   - [Pushing Data](./sync/push.md)

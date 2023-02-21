@@ -1,5 +1,5 @@
 [book]
-authors = ["Patrick Ferris"]
+authors = ["Patrick Ferris", "Thomas Gazagnaire"]
 language = "en"
 multilingual = false
 src = "src"
